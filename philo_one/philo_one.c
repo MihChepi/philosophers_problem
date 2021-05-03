@@ -47,24 +47,19 @@ int init_params(char **argv, t_params *p)
 	p->eats = -1;
 	if (argv[5] != NULL)
 		p->eats = ft_atoi(argv[5]);
-	printf("num_of_ph = %d\ntime_to_die = %d\n time_to_eat %d\n time_to_sleep = %d\n eats = %d \n",
-		p->ph, p->time_to_die, p->time_to_eat, p->time_to_sleep, p->eats);
+	if (p->eats >= 0)
+		p->flag_eats = 0;
+	else
+		p->flag_eats = 1;
+//	printf("num_of_ph = %d\ntime_to_die = %d\n time_to_eat %d\n time_to_sleep = %d\n eats = %d \n",
+//		p->ph, p->time_to_die, p->time_to_eat, p->time_to_sleep, p->eats);
 	if (p->ph < 1 ||  p->time_to_die < 1 || p->time_to_eat < 1 ||
 			p->time_to_sleep < 1)
 		return (1);
 	return (0);
 }
 
-void	print_status(t_ph *ph)
-{
-//	◦ timestamp_in_ms %d has taken a fork
-//	◦ timestamp_in_ms %d is eating
-//	◦ timestamp_in_ms %d is sleeping
-//	◦ timestamp_in_ms %d is thinking
-//	◦ timestamp_in_ms %d died
-}
-
-unsigned long long time_time(t_params *par)
+unsigned long long current_time(t_params *par)
 {
 	unsigned long long time;
 
@@ -74,38 +69,49 @@ unsigned long long time_time(t_params *par)
 	return (time);
 }
 
+int 	is_dead(t_ph *ph)
+{
+	unsigned long long time;
+
+	gettimeofday(&ph->params->t, NULL);
+	time = ph->params->t.tv_sec * 1000 + ph->params->t.tv_usec / 1000;
+	time = time - ph->params->start_t;
+	if ((time - ph->start_eat) > ph->params->time_to_die)
+		return (1);
+	return (0);
+}
+
 
 void	*main_pthread(void *arg)
 {
 	t_ph	*ph;
 	ph = (t_ph*)(arg);
 	(void)ph;
-	unsigned long long time;
 
-	while(ph->params->eats)
+	while(ph->params->eats > 0 || ph->params->flag_eats == 1)
 	{
-		if (ph->params->ready_to_eat < ph->params->ph - 2)
+		if (ph->params->taken_forks < ph->params->ph - 1)
 		{
-			++ph->params->ready_to_eat;
+			++ph->params->taken_forks;
 			pthread_mutex_lock(ph->fork_left);
-			printf("%llu %d has taken a fork left\n", time_time(ph->params), ph->num);
+			printf("%llu %d has taken a fork left\n", current_time(ph->params), ph->num + 1);
 			pthread_mutex_lock(ph->fork_right);
-			ph->params->ready_to_eat--;
-			printf("%llu %d has taken a fork right\n",time_time(ph->params), ph->num);
-
-			printf("%llu %d is eating\n", time_time(ph->params), ph->num);
+			--ph->params->taken_forks;
+			printf("%llu %d has taken a fork right\n",current_time(ph->params), ph->num + 1);
+			ph->start_eat = current_time(ph->params);
+			printf("%llu %d is eating\n", ph->start_eat, ph->num + 1);
 			usleep(ph->params->time_to_eat);
-
-
-			pthread_mutex_unlock(ph->fork_left);
-			pthread_mutex_unlock(ph->fork_right);
-
-			printf("%llu %d is sleeping\n", time_time(ph->params), ph->num);
-			usleep(ph->params->time_to_sleep);
-
-			printf("%llu %d is thinking\n", time_time(ph->params), ph->num);
 			if (ph->params->eats > 0)
 				ph->params->eats--;
+			if (is_dead(ph))
+				exit(0);
+			pthread_mutex_unlock(ph->fork_left);
+			pthread_mutex_unlock(ph->fork_right);
+			printf("%llu %d is sleeping\n", current_time(ph->params), ph->num + 1);
+			usleep(ph->params->time_to_sleep);
+			if (is_dead(ph))
+				exit(0);
+			printf("%llu %d is thinking\n", current_time(ph->params), ph->num + 1);
 		}
 	}
 	return (0);
@@ -114,7 +120,6 @@ void	*main_pthread(void *arg)
 int	main(int argc, char **argv)
 {
 	t_params		par;
-
 
 	setbuf(stdout, 0);
 	if (argc != 6 && argc != 5)
@@ -146,7 +151,7 @@ int	main(int argc, char **argv)
 	ph[i].num = i;
 	ph[i].params = &par;
 
-	par.ready_to_eat = 0; //инициализируем колличество едящих философов
+	par.taken_forks = 0; //инициализируем колличество взятых вилок
 	gettimeofday(&par.t, NULL);
 	par.start_t = par.t.tv_sec * 1000 + par.t.tv_usec / 1000;
 
