@@ -85,9 +85,10 @@ int 	is_dead(t_ph *ph)
 void	*main_pthread(void *arg)
 {
 	t_ph	*ph;
-	ph = (t_ph*)(arg);
-	(void)ph;
 
+
+	ph = (t_ph*)(arg);
+	ph->start_eat = 0;
 	while(ph->params->eats > 0 || ph->params->flag_eats == 1)
 	{
 		if (ph->params->taken_forks < ph->params->ph - 1)
@@ -98,19 +99,24 @@ void	*main_pthread(void *arg)
 			pthread_mutex_lock(ph->fork_right);
 			--ph->params->taken_forks;
 			printf("%llu %d has taken a fork right\n",current_time(ph->params), ph->num + 1);
+			if (current_time(ph->params) - ph->start_eat >= ph->params->time_to_die)
+			{
+				printf("philisofer is DEAD %llu\n", current_time(ph->params) - ph->start_eat);
+				exit (0);
+			}
 			ph->start_eat = current_time(ph->params);
 			printf("%llu %d is eating\n", ph->start_eat, ph->num + 1);
-			usleep(ph->params->time_to_eat);
+			usleep(ph->params->time_to_eat  * 1000);
 			if (ph->params->eats > 0)
 				ph->params->eats--;
-			if (is_dead(ph))
-				exit(0);
+		//	if (is_dead(ph))
+		//		exit(0);
 			pthread_mutex_unlock(ph->fork_left);
 			pthread_mutex_unlock(ph->fork_right);
 			printf("%llu %d is sleeping\n", current_time(ph->params), ph->num + 1);
-			usleep(ph->params->time_to_sleep);
-			if (is_dead(ph))
-				exit(0);
+			usleep(ph->params->time_to_sleep * 1000);
+		//	if (is_dead(ph))
+		//		exit(0);
 			printf("%llu %d is thinking\n", current_time(ph->params), ph->num + 1);
 		}
 	}
