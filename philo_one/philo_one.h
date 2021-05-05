@@ -9,15 +9,14 @@
 typedef struct s_params
 {
 	pthread_mutex_t		*fork;
-	int					taken_forks;
-	int					ph;
+	struct timeval		t;
+	unsigned long long	start_t;
 	int					time_to_die;
 	int					time_to_eat;
 	int					time_to_sleep;
+	int					ph;
 	int					eats;
-	bool				flag_eats;
-	unsigned long long	start_t;
-	struct timeval		t;
+	bool 				flag_eats;
 }				t_params;
 
 typedef struct s_ph
@@ -25,7 +24,7 @@ typedef struct s_ph
 	pthread_mutex_t		*fork_left;
 	pthread_mutex_t		*fork_right;
 	t_params			*params;
+	unsigned long long	start_eat;
 	int 				num;
 	bool				dead;
-	unsigned long long	start_eat;
 }				t_ph;
