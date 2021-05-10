@@ -16,6 +16,7 @@ typedef struct s_params
 	int					time_to_sleep;
 	int					ph;
 	int					eats;
+	bool 				dead;
 	bool 				flag_eats;
 }				t_params;
 

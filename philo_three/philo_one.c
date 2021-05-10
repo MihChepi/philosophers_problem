@@ -59,26 +59,6 @@ int init_params(char **argv, t_params *p)
 	return (0);
 }
 
-
-void	*num_eats_check(void *arg)
-{
-	t_params	*par;
-
-	par = (t_params*)(arg);
-	while(1)
-	{
-		usleep(1000);
-		if (par->eats <= 0)
-		{
-			printf("YSEEEEEEEEEEE\n");
-			par->dead = 1;
-			break;
-		}
-	}
-	return (0);
-}
-
-
 unsigned long long current_time(t_params *par)
 {
 	unsigned long long time;
@@ -92,10 +72,12 @@ unsigned long long current_time(t_params *par)
 void	*main_pthread_right(void *arg)
 {
 	t_ph	*ph;
+	int 	eats;
 
+	eats = ph->params->eats;
 	ph = (t_ph*)(arg);
 	ph->start_eat = 0;
-	while(1)//ph->params->eats > 0 || ph->params->flag_eats == 1)
+	while(eats)
 	{
 		if (ph->params->dead == 1)
 			break ;
@@ -112,8 +94,8 @@ void	*main_pthread_right(void *arg)
 		ph->start_eat = current_time(ph->params);
 		printf("%llu %d is eating\n", ph->start_eat, ph->num + 1);
 		usleep(ph->params->time_to_eat);
-		if (ph->params->eats > 0)
-			--ph->params->eats;
+		if (eats > 0)
+			--eats;
 		pthread_mutex_unlock(ph->fork_right);
 		pthread_mutex_unlock(ph->fork_left);
 		printf("%llu %d is sleeping\n", current_time(ph->params), ph->num + 1);
@@ -127,10 +109,12 @@ void	*main_pthread_right(void *arg)
 void	*main_pthread_left(void *arg)
 {
 	t_ph	*ph;
+	int 	eats;
 
+	eats = ph->params->eats;
 	ph = (t_ph*)(arg);
 	ph->start_eat = 0;
-	while(1)//ph->params->eats > 0 || ph->params->flag_eats == 1)
+	while(eats)
 	{
 		if (ph->params->dead == 1)
 			break ;
@@ -147,8 +131,8 @@ void	*main_pthread_left(void *arg)
 		ph->start_eat = current_time(ph->params);
 		printf("%llu %d is eating\n", ph->start_eat, ph->num + 1);
 		usleep(ph->params->time_to_eat);
-		if (ph->params->eats > 0)
-			--ph->params->eats;
+		if (eats > 0)
+			--eats;
 		pthread_mutex_unlock(ph->fork_left);
 		pthread_mutex_unlock(ph->fork_right);
 		printf("%llu %d is sleeping\n", current_time(ph->params), ph->num + 1);
@@ -163,6 +147,7 @@ int	main(int argc, char **argv)
 {
 	t_params		par;
 
+//	setbuf(stdout, 0);
 	if (argc != 6 && argc != 5)
 		return (wrong_args());
 	if (init_params(argv, &par))
@@ -205,9 +190,6 @@ int	main(int argc, char **argv)
 		else
 			pthread_create(&thread[i], NULL, main_pthread_right, (void *) &ph[i]);
 	}
-
-	if (par.flag_eats == 0)
-		pthread_create(&thread[i], NULL, num_eats_check, (void *) &par);
 
 //	i = 0;
 //	while (par.dead == 0)
