@@ -69,24 +69,27 @@ unsigned long long current_time(t_params *par)
 	return (time);
 }
 
-//void	communist(t_params *par, int n)
-//{
-//	int i;
-//
-//	i = -1;
-//	while(par->num_ph != ++i)
-//	{
-//		if (par->ph[i]->num_eat > n)
-//			return (1);
-//	}
-//	return (0);
-//}
+int	communist(t_params *par, int n)
+{
+	int i;
+	int eats;
+
+	i = -1;
+	eats = 0;
+	while(par->num_ph - 1 != ++i)
+	{
+		if (par->ph[i].num_eat + 1 == n)
+			eats++;
+	}
+	if (eats > par->num_ph)
+		return(1);
+	return (0);
+}
 
 void	*main_pthread_right(void *arg)
 {
 	t_ph	*ph;
 	int		eats;
-
 
 	ph = (t_ph*)(arg);
 	eats = ph->params->eats;
@@ -96,17 +99,12 @@ void	*main_pthread_right(void *arg)
 	{
 		if (ph->params->dead == 1)
 			break ;
-//		communist(ph->params, ph->num_eat);
+		if (communist(ph->params, ph->num_eat))
+			usleep(ph->params->time_to_eat);
 		pthread_mutex_lock(ph->fork_right);
 //		printf("%llu %d has taken a fork right\n",current_time(ph->params), ph->num + 1);
 		pthread_mutex_lock(ph->fork_left);
 //		printf("%llu %d has taken a fork left\n", current_time(ph->params), ph->num + 1);
-	//	if (current_time(ph->params) - ph->start_eat >= ph->params->time_to_die)
-	//	{
-	//		ph->params->dead = 1;
-	//		printf("Philosoph %d is DEAD %llu\n", ph->num + 1, current_time(ph->params) - ph->start_eat);
-	//		break ;
-	//	}
 		ph->start_eat = current_time(ph->params);
 		printf("%llu %d is eating\n", ph->start_eat, ph->num + 1);
 		ft_usleep(ph->params->time_to_eat);
@@ -139,6 +137,8 @@ void	*main_pthread_left(void *arg)
 	{
 		if (ph->params->dead == 1)
 			break ;
+		if (communist(ph->params, ph->num_eat))
+			usleep(ph->params->time_to_eat);
 		pthread_mutex_lock(ph->fork_left);
 //		printf("%llu %d has taken a fork left\n", current_time(ph->params), ph->num + 1);
 		pthread_mutex_lock(ph->fork_right);
