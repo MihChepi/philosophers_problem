@@ -14,7 +14,8 @@ NAME    =   philo_one
 
 HEADER 	=   ./philo_one.h
 
-SRCS    =	./philo_one.c \
+SRCS    =	philo_one.c \
+			ph_utils.c
 
 
 

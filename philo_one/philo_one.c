@@ -40,7 +40,7 @@ int	wrong_args(void)
 
 int init_params(char **argv, t_params *p)
 {
-	p->ph = ft_atoi(argv[1]);
+	p->num_ph = ft_atoi(argv[1]);
 	p->time_to_die = ft_atoi(argv[2]);
 	p->time_to_eat = ft_atoi(argv[3]) * 1000;
 	p->time_to_sleep = ft_atoi(argv[4]) * 1000;
@@ -53,31 +53,11 @@ int init_params(char **argv, t_params *p)
 		p->flag_eats = 1;
 //	printf("num_of_ph = %d\ntime_to_die = %d\n time_to_eat %d\n time_to_sleep = %d\n eats = %d \n",
 //		p->ph, p->time_to_die, p->time_to_eat, p->time_to_sleep, p->eats);
-	if (p->ph < 1 ||  p->time_to_die < 1 || p->time_to_eat < 1 ||
+	if (p->num_ph < 1 ||  p->time_to_die < 1 || p->time_to_eat < 1 ||
 			p->time_to_sleep < 1)
 		return (1);
 	return (0);
 }
-
-
-void	*num_eats_check(void *arg)
-{
-	t_params	*par;
-
-	par = (t_params*)(arg);
-	while(1)
-	{
-		usleep(1000);
-		if (par->eats <= 0)
-		{
-			printf("YSEEEEEEEEEEE\n");
-			par->dead = 1;
-			break;
-		}
-	}
-	return (0);
-}
-
 
 unsigned long long current_time(t_params *par)
 {
@@ -89,73 +69,116 @@ unsigned long long current_time(t_params *par)
 	return (time);
 }
 
+//void	communist(t_params *par, int n)
+//{
+//	int i;
+//
+//	i = -1;
+//	while(par->num_ph != ++i)
+//	{
+//		if (par->ph[i]->num_eat > n)
+//			return (1);
+//	}
+//	return (0);
+//}
+
 void	*main_pthread_right(void *arg)
 {
 	t_ph	*ph;
+	int		eats;
+
 
 	ph = (t_ph*)(arg);
+	eats = ph->params->eats;
+	ph->num_eat = 0;
 	ph->start_eat = 0;
-	while(1)//ph->params->eats > 0 || ph->params->flag_eats == 1)
+	while(eats)
 	{
 		if (ph->params->dead == 1)
 			break ;
+//		communist(ph->params, ph->num_eat);
 		pthread_mutex_lock(ph->fork_right);
-		printf("%llu %d has taken a fork right\n",current_time(ph->params), ph->num + 1);
+//		printf("%llu %d has taken a fork right\n",current_time(ph->params), ph->num + 1);
 		pthread_mutex_lock(ph->fork_left);
-		printf("%llu %d has taken a fork left\n", current_time(ph->params), ph->num + 1);
-		if (current_time(ph->params) - ph->start_eat >= ph->params->time_to_die)
-		{
-			ph->params->dead = 1;
-			printf("Philosoph %d is DEAD %llu\n", ph->num + 1, current_time(ph->params) - ph->start_eat);
-			break ;
-		}
+//		printf("%llu %d has taken a fork left\n", current_time(ph->params), ph->num + 1);
+	//	if (current_time(ph->params) - ph->start_eat >= ph->params->time_to_die)
+	//	{
+	//		ph->params->dead = 1;
+	//		printf("Philosoph %d is DEAD %llu\n", ph->num + 1, current_time(ph->params) - ph->start_eat);
+	//		break ;
+	//	}
 		ph->start_eat = current_time(ph->params);
 		printf("%llu %d is eating\n", ph->start_eat, ph->num + 1);
-		usleep(ph->params->time_to_eat);
-		if (ph->params->eats > 0)
-			--ph->params->eats;
+		ft_usleep(ph->params->time_to_eat);
+		++ph->num_eat;
+		if (eats > 0)
+			--eats;
 		pthread_mutex_unlock(ph->fork_right);
 		pthread_mutex_unlock(ph->fork_left);
-		printf("%llu %d is sleeping\n", current_time(ph->params), ph->num + 1);
-		usleep(ph->params->time_to_sleep);
-		printf("%llu %d is thinking\n", current_time(ph->params), ph->num + 1);
+//		printf("%llu %d is sleeping\n", current_time(ph->params), ph->num + 1);
+		ft_usleep(ph->params->time_to_sleep);
+//		printf("%llu %d is thinking\n", current_time(ph->params), ph->num + 1);
 	}
-	ph->params->dead = 1;
+	pthread_mutex_unlock(ph->fork_left);
+	pthread_mutex_unlock(ph->fork_right);
+	if (!(ph->params->eats > 0))
+		ph->params->dead = 1;
 	return (0);
 }
 
 void	*main_pthread_left(void *arg)
 {
 	t_ph	*ph;
+	int		eats;
 
 	ph = (t_ph*)(arg);
+	eats = ph->params->eats;
+	ph->num_eat = 0;
 	ph->start_eat = 0;
-	while(1)//ph->params->eats > 0 || ph->params->flag_eats == 1)
+	while(eats)
 	{
 		if (ph->params->dead == 1)
 			break ;
 		pthread_mutex_lock(ph->fork_left);
-		printf("%llu %d has taken a fork left\n", current_time(ph->params), ph->num + 1);
+//		printf("%llu %d has taken a fork left\n", current_time(ph->params), ph->num + 1);
 		pthread_mutex_lock(ph->fork_right);
-		printf("%llu %d has taken a fork right\n",current_time(ph->params), ph->num + 1);
-		if (current_time(ph->params) - ph->start_eat >= ph->params->time_to_die)
-		{
-			ph->params->dead = 1;
-			printf("Philosoph %d is DEAD %llu\n", ph->num + 1, current_time(ph->params) - ph->start_eat);
-			break ;
-		}
+//		printf("%llu %d has taken a fork right\n",current_time(ph->params), ph->num + 1);
 		ph->start_eat = current_time(ph->params);
 		printf("%llu %d is eating\n", ph->start_eat, ph->num + 1);
-		usleep(ph->params->time_to_eat);
-		if (ph->params->eats > 0)
-			--ph->params->eats;
+		ft_usleep(ph->params->time_to_eat);
+		++ph->num_eat;
+		if (eats > 0)
+			--eats;
 		pthread_mutex_unlock(ph->fork_left);
 		pthread_mutex_unlock(ph->fork_right);
-		printf("%llu %d is sleeping\n", current_time(ph->params), ph->num + 1);
-		usleep(ph->params->time_to_sleep);
-		printf("%llu %d is thinking\n", current_time(ph->params), ph->num + 1);
+//		printf("%llu %d is sleeping\n", current_time(ph->params), ph->num + 1);
+		ft_usleep(ph->params->time_to_sleep);
+//		printf("%llu %d is thinking\n", current_time(ph->params), ph->num + 1);
 	}
-	ph->params->dead = 1;
+	pthread_mutex_unlock(ph->fork_left);
+	pthread_mutex_unlock(ph->fork_right);
+	if (!(ph->params->eats > 0))
+		ph->params->dead = 1;
+	return (0);
+}
+
+void	*stream_of_deaths(void *arg)
+{
+	t_params	*par;
+	int 		i;
+
+	par = (t_params*)(arg);
+	i = -1;
+	while(par->num_ph != ++i)
+	{
+		if (current_time(par->ph[i].params) - par->ph[i].start_eat >=
+			par->ph[i].params->time_to_die)
+			break;
+		if (i == par->num_ph - 1)
+			i = -1;
+	}
+	par->ph[i].params->dead = 1;
+	printf("Philosoph %d is DEAD %llu\n", i + 1, current_time(par->ph[i].params) - par->ph[i].start_eat);
 	return (0);
 }
 
@@ -170,18 +193,19 @@ int	main(int argc, char **argv)
 
 
 	t_ph				*ph;
-	pthread_t			thread[par.ph + 1]; // инициализируем потоки
+	pthread_t			thread[par.num_ph + 1]; // инициализируем потоки
 
-	ph = malloc(sizeof(t_ph) * par.ph);
-	par.fork = malloc(sizeof(pthread_mutex_t) * par.ph); // инициализируем мьютексы
+	ph = malloc(sizeof(t_ph) * par.num_ph);
+	par.fork = malloc(sizeof(pthread_mutex_t) * par.num_ph); // инициализируем мьютексы
 
+	par.ph = ph;
 	int					i;
 	i = -1;
-	while(par.ph != ++i)
+	while(par.num_ph != ++i)
 		pthread_mutex_init(&par.fork[i], NULL); // создаем мьютексы - вилки
 
 	i = -1;
-	while(par.ph != ++i + 1)
+	while(par.num_ph != ++i + 1)
 	{
 		ph[i].fork_left = &par.fork[i];
 		ph[i].fork_right = &par.fork[i + 1];
@@ -198,7 +222,7 @@ int	main(int argc, char **argv)
 	ph->params->dead = 0;
 
 	i = -1;
-	while(par.ph != ++i )
+	while(par.num_ph != ++i )
 	{
 		if (i / 2 == 0)
 			pthread_create(&thread[i], NULL, main_pthread_left, (void *) &ph[i]); // создаем потоки - философов
@@ -206,26 +230,10 @@ int	main(int argc, char **argv)
 			pthread_create(&thread[i], NULL, main_pthread_right, (void *) &ph[i]);
 	}
 
-	if (par.flag_eats == 0)
-		pthread_create(&thread[i], NULL, num_eats_check, (void *) &par);
-
-//	i = 0;
-//	while (par.dead == 0)
-//	{
-//		usleep(5000);
-//		if (current_time(ph[i].params) - ph[i].start_eat >= ph[i].params->time_to_die)
-//		{
-//			ph->params->dead = 1;
-//			printf("Philosoph is DEAD %llu\n", current_time(ph[i].params) - ph[i].start_eat);
-//			break;
-//		}
-//		i++;
-//		if (i == par.ph - 1)
-//			i = 0;
-//	}
+	pthread_create(&thread[i], NULL, stream_of_deaths, (void *) &par);
 
 	i = 0;
-	while(par.ph - 1 != i)
+	while(par.num_ph - 1 != i)
 	{
 		usleep(5000);
 		pthread_join(thread[i], NULL);
@@ -233,3 +241,7 @@ int	main(int argc, char **argv)
 	}
 	return (0);
 }
+
+// сделать поток смертей ++
+// сделать коммуниста
+// сделать мьютеккс на всё
