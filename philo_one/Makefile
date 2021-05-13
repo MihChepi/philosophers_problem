@@ -14,7 +14,10 @@ NAME    =   philo_one
 
 HEADER 	=   ./philo_one.h
 
-SRCS    =	philo_one.c \
+SRCS    =	main.c \
+			parser.c \
+			philosophers.c \
+			waiter.c \
 			ph_utils.c
 
 
@@ -23,7 +26,7 @@ OBJS		=	$(SRCS:.c=.o)
 
 CC      	=   gcc
 
-CFLAGS  	=  # -Wall -Wextra -Werror
+CFLAGS  	=  -Wall -Wextra #-Werror
 
 .PHONY:		all clean fclean re bonus
 

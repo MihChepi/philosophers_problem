@@ -14,6 +14,7 @@ struct s_ph;
 typedef struct s_params
 {
 	pthread_mutex_t		*fork;
+	pthread_mutex_t		lock_all[1];
 	struct timeval		t;
 	unsigned long long	start_t;
 	int					time_to_die;
@@ -21,6 +22,7 @@ typedef struct s_params
 	int					time_to_sleep;
 	int					num_ph;
 	int					eats;
+	int					well_fed;
 	bool 				dead;
 	bool 				flag_eats;
 	struct s_ph			*ph;
@@ -30,6 +32,7 @@ typedef struct s_ph
 {
 	pthread_mutex_t		*fork_left;
 	pthread_mutex_t		*fork_right;
+	pthread_mutex_t		communist;
 	t_params			*params;
 	unsigned long long	start_eat;
 	int 				num;
@@ -37,6 +40,12 @@ typedef struct s_ph
 	bool				dead;
 }				t_ph;
 
-void 	ft_usleep(unsigned long long t);
+void 				ft_usleep(unsigned long long t);
+int					init_params(char **argv, t_params *p);
+int					wrong_args(void);
+unsigned long long	current_time(t_params *par);
+void				*main_pthread(void *arg);
+void				*communist(void *arg);
+void				*stream_of_deaths(void *arg);
 
 #endif
