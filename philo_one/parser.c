@@ -35,7 +35,7 @@ int init_params(char **argv, t_params *p)
 	else
 		p->flag_eats = 1;
 //	printf("num_of_ph = %d\ntime_to_die = %d\n time_to_eat %d\n time_to_sleep = %d\n eats = %d \n",
-//		p->ph, p->time_to_die, p->time_to_eat, p->time_to_sleep, p->eats);
+//		p->num_ph, p->time_to_die, p->time_to_eat, p->time_to_sleep, p->eats);
 	if (p->num_ph < 1 ||  p->time_to_die < 1 || p->time_to_eat < 1 ||
 		p->time_to_sleep < 1)
 		return (1);
