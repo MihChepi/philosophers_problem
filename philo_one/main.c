@@ -79,15 +79,22 @@ void ph_init(t_params *par)
 int	main(int argc, char **argv)
 {
 	t_params		par;
+	int 			i;
 
 	if (argc != 6 && argc != 5)
 		return (wrong_args());
 	if (init_params(argv, &par))
 		return (wrong_args());
+	par.end_all = 0;
 	ph_init(&par);
 	pthread_mutex_unlock(par.start);
-	while(par.end == 0 ) //&& par.well_fed == par.num_ph)
+	while(par.end == 0) //&& par.well_fed == par.num_ph)
 		usleep(1);
+
+	i = 0;
+	while(i <= par.num_ph)
+		pthread_join(par.threads[i++], NULL);
+	par.end_all = 1;
 	return (0);
 }
 

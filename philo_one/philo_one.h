@@ -23,9 +23,9 @@ typedef struct s_params
 	int					num_ph;
 	int					eats;
 	int					well_fed;
-	int					dead;
 	bool 				flag_eats;
 	bool 				end;
+	bool 				end_all;
 	pthread_t			*threads;
 	struct s_ph			*ph;
 }				t_params;

@@ -5,14 +5,12 @@ void	*stream_of_deaths(void *arg)
 	t_params	*par;
 	int 		i;
 
-
-//	usleep(10000);
 	par = (t_params*)(arg);
 	i = -1;
 	pthread_mutex_lock(par->start);
 	pthread_mutex_unlock(par->start);
 	usleep(100);
-	while(par->num_ph != ++i) //&& par->well_fed != par->num_ph)
+	while(par->num_ph != ++i)
 	{
 		usleep(50);
 		if ((int)(current_time(par->ph[i].params) - par->ph[i].start_eat) >=
@@ -54,7 +52,7 @@ void 	communism(t_params *par)
 	i = 0;
 	pthread_mutex_lock(par->start);
 	pthread_mutex_unlock(par->start);
-	while(!par->end)
+	while(!par->end_all)
 	{
 		can_eat = i;
 		eats = 0;
@@ -63,13 +61,11 @@ void 	communism(t_params *par)
 			pthread_mutex_unlock(&par->ph[can_eat].communist);
 			can_eat += 2;
 			can_eat %= par->num_ph;
-			eats++;
+			++eats;
 		}
 		ft_usleep(par->time_to_eat);
-		i++;
-		i %= par->num_ph;
+		i = (i + 1) % par->num_ph;
 	}
-
 }
 
 void	*communist(void *arg)

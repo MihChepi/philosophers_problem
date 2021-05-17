@@ -45,7 +45,7 @@ void	*main_pthread(void *arg)
 	ph->start_eat = 0;
 	pthread_mutex_lock(ph->params->start);
 	pthread_mutex_unlock(ph->params->start);
-	while(!ph->params->dead)
+	while(!ph->params->end)
 		ph_cycle(ph);
 	pthread_mutex_unlock(ph->fork_left);
 	pthread_mutex_unlock(ph->fork_right);
