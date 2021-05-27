@@ -21,7 +21,7 @@ static int	ft_atoi(const char *str)
 	return (num * minus);
 }
 
-int init_params(char **argv, t_params *p)
+int	init_params(char **argv, t_params *p)
 {
 	p->num_ph = ft_atoi(argv[1]);
 	p->time_to_die = ft_atoi(argv[2]);
@@ -34,10 +34,8 @@ int init_params(char **argv, t_params *p)
 		p->flag_eats = 0;
 	else
 		p->flag_eats = 1;
-//	printf("num_of_ph = %d\ntime_to_die = %d\n time_to_eat %d\n time_to_sleep = %d\n eats = %d \n",
-//		p->num_ph, p->time_to_die, p->time_to_eat, p->time_to_sleep, p->eats);
-	if (p->num_ph < 1 ||  p->time_to_die < 1 || p->time_to_eat < 1 ||
-		p->time_to_sleep < 1)
+	if (p->num_ph < 1 || p->time_to_die < 1 || p->time_to_eat < 1
+		|| p->time_to_sleep < 1)
 		return (1);
 	return (0);
 }

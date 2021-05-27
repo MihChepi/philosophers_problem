@@ -1,29 +1,24 @@
-#include "philo_two.h"
+#include "philo_three.h"
 
 void	*stream_of_deaths(void *arg)
 {
-	t_params	*par;
-	int			i;
+	t_ph	*ph;
+	int		i;
 
-	par = (t_params *)(arg);
+	ph = (t_ph *)(arg);
 	i = -1;
-	sem_wait(par->start);
-	sem_post(par->start);
+	sem_wait(ph->params->start);
+	sem_post(ph->params->start);
 	usleep(100);
-	while (par->num_ph != ++i)
+	while (1)
 	{
-		usleep(50);
-		if ((int)(current_time(par->ph[i].params) - par->ph[i].start_eat)
-			> par->ph[i].params->time_to_die)
-			break ;
-		if (i == par->num_ph - 1)
-			i = -1;
-		if (par->well_fed == par->num_ph)
+		usleep(100);
+		if ((int)(current_time(ph->params) - ph->start_eat)
+			> ph->params->time_to_die)
 			break ;
 	}
-	if (!(par->well_fed == par->num_ph))
-		printf("%llu %d died\n", current_time(par), i + 1);
-	par->end = 1;
+	printf("%llu %d died\n", current_time(ph->params), i + 1);
+	ph->params->end = 1;
 	return (0);
 }
 

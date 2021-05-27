@@ -10,9 +10,9 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME    =   philo_two
+NAME    =   philo_three
 
-HEADER 	=   ./philo_two.h
+HEADER 	=   ./philo_three.h
 
 SRCS    =	main.c \
 			parser.c \
@@ -27,7 +27,7 @@ OBJS		=	$(SRCS:.c=.o)
 
 CC      	=   gcc
 
-CFLAGS  	=  -Wall -Wextra -Werror
+CFLAGS  	=  -Wall -Wextra #-Werror
 
 .PHONY:		all clean fclean re bonus
 

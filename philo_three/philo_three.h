@@ -1,5 +1,5 @@
-#ifndef PHILO_ONE_H
-# define PHILO_ONE_H
+#ifndef PHILO_THREE_H
+# define PHILO_THREE_H
 
 # include <stdio.h>
 # include <unistd.h>
@@ -8,13 +8,17 @@
 # include <pthread.h>
 # include <sys/time.h>
 # include <stdbool.h>
+# include <semaphore.h>
+# include <signal.h>
 
 struct					s_ph;
 
 typedef struct s_params
 {
-	pthread_mutex_t		*fork;
-	pthread_mutex_t		start[1];
+	sem_t				**fork;
+	sem_t				*start;
+	sem_t				*dead;
+	sem_t				*stop;
 	struct timeval		t;
 	unsigned long long	start_t;
 	int					time_to_die;
@@ -26,15 +30,17 @@ typedef struct s_params
 	bool				flag_eats;
 	bool				end;
 	bool				end_all;
+	pid_t				*pid;
+	pid_t				 status;
 	pthread_t			*threads;
 	struct s_ph			*ph;
 }				t_params;
 
 typedef struct s_ph
 {
-	pthread_mutex_t		*fork_left;
-	pthread_mutex_t		*fork_right;
-	pthread_mutex_t		communist;
+	sem_t				*fork_left_hand;
+	sem_t				*fork_right_hand;
+	sem_t				*communist;
 	t_params			*params;
 	unsigned long long	start_eat;
 	int					num;
@@ -51,5 +57,7 @@ void				start_time(t_params *par);
 void				*main_pthread(void *arg);
 void				*communist(void *arg);
 void				*stream_of_deaths(void *arg);
+char				*create_sem_name_fork(int i);
+char				*my_itoa(int i);
 
 #endif

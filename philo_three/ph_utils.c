@@ -1,4 +1,4 @@
-#include "philo_one.h"
+#include "philo_three.h"
 
 void	start_time(t_params *par)
 {
@@ -39,4 +39,19 @@ void 	ft_usleep(unsigned long long t)
 		usleep(300);
 		now = current_get_time_from_start();
 	}
+}
+
+char	*create_sem_name_fork(int i)
+{
+	char	*str;
+	char	*num;
+
+	str = malloc(100);
+	str[0] = '/';
+	str[1] = 'f';
+	str[2] = 'r';
+	num = my_itoa(i);
+	strlcat(str, num, 100);
+	free(num);
+	return (str);
 }
