@@ -16,9 +16,8 @@ struct					s_ph;
 typedef struct s_params
 {
 	sem_t				**fork;
-	sem_t				*start;
-	sem_t				*dead;
 	sem_t				*stop;
+	sem_t				*start;
 	struct timeval		t;
 	unsigned long long	start_t;
 	int					time_to_die;
@@ -31,8 +30,10 @@ typedef struct s_params
 	bool				end;
 	bool				end_all;
 	pid_t				*pid;
-	pid_t				 status;
-	pthread_t			*threads;
+	pid_t				waiter;
+	pthread_t			*death;
+	pthread_t			*main;
+	char				**sem_name;
 	struct s_ph			*ph;
 }				t_params;
 
@@ -56,8 +57,11 @@ unsigned long long	current_time(t_params *par);
 void				start_time(t_params *par);
 void				*main_pthread(void *arg);
 void				*communist(void *arg);
+void				init_sem_communist(t_params *par);
 void				*stream_of_deaths(void *arg);
 char				*create_sem_name_fork(int i);
 char				*my_itoa(int i);
+void				create_sem_stop(t_params *par);
+void				create_sem_start(t_params *par);
 
 #endif

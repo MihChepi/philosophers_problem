@@ -21,9 +21,9 @@ void	*stream_of_deaths(void *arg)
 		if (par->well_fed == par->num_ph)
 			break ;
 	}
+	par->end = 1;
 	if (!(par->well_fed == par->num_ph))
 		printf("%llu %d died\n", current_time(par), i + 1);
-	par->end = 1;
 	return (0);
 }
 

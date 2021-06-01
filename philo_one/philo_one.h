@@ -15,6 +15,7 @@ typedef struct s_params
 {
 	pthread_mutex_t		*fork;
 	pthread_mutex_t		start[1];
+	pthread_t			death;
 	struct timeval		t;
 	unsigned long long	start_t;
 	int					time_to_die;

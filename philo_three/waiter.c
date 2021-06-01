@@ -3,10 +3,8 @@
 void	*stream_of_deaths(void *arg)
 {
 	t_ph	*ph;
-	int		i;
 
 	ph = (t_ph *)(arg);
-	i = -1;
 	sem_wait(ph->params->start);
 	sem_post(ph->params->start);
 	usleep(100);
@@ -14,12 +12,21 @@ void	*stream_of_deaths(void *arg)
 	{
 		usleep(100);
 		if ((int)(current_time(ph->params) - ph->start_eat)
-			> ph->params->time_to_die)
+			>= ph->params->time_to_die)
+			break ;
+		if (ph->params->well_fed == 1)
 			break ;
 	}
-	printf("%llu %d died\n", current_time(ph->params), i + 1);
-	ph->params->end = 1;
-	return (0);
+	if (ph->params->well_fed != 1)
+	{
+		sem_wait(ph->params->start);
+		printf("%llu %d died\n", current_time(ph->params), ph->num + 1);
+		sem_post(ph->params->stop);
+		ph->params->end = 1;
+		return (0);
+	}
+	else
+		exit(1);
 }
 
 char	*create_sem_name(int i)
@@ -37,7 +44,7 @@ char	*create_sem_name(int i)
 	return (str);
 }
 
-void 	init_mutex_communist(t_params *par)
+void 	init_sem_communist(t_params *par)
 {
 	int		i;
 	char	**sem_name;
@@ -70,7 +77,7 @@ void 	communism(t_params *par)
 	i = 0;
 	sem_wait(par->start);
 	sem_post(par->start);
-	while (!par->end_all)
+	while (par->num_ph)
 	{
 		can_eat = i;
 		eats = 0;
@@ -91,7 +98,6 @@ void	*communist(void *arg)
 	t_params	*par;
 
 	par = (t_params *)(arg);
-	init_mutex_communist(par);
 	communism(par);
 	return (0);
 }

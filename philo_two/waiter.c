@@ -14,7 +14,7 @@ void	*stream_of_deaths(void *arg)
 	{
 		usleep(50);
 		if ((int)(current_time(par->ph[i].params) - par->ph[i].start_eat)
-			> par->ph[i].params->time_to_die)
+			>= par->ph[i].params->time_to_die)
 			break ;
 		if (i == par->num_ph - 1)
 			i = -1;

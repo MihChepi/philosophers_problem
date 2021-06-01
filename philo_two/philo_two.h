@@ -16,6 +16,7 @@ typedef struct s_params
 {
 	sem_t				**fork;
 	sem_t				*start;
+	pthread_t			death;
 	struct timeval		t;
 	unsigned long long	start_t;
 	int					time_to_die;

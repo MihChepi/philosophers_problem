@@ -38,7 +38,7 @@ void	ph_cycle(t_ph *ph)
 
 void	*main_pthread(void *arg)
 {
-	t_ph	*ph;
+	t_ph		*ph;
 
 	ph = (t_ph *)(arg);
 	ph->eats = ph->params->eats;

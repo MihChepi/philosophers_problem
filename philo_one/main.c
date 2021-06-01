@@ -45,13 +45,15 @@ void	create_ph(t_params *par, t_ph *ph, pthread_t *thread)
 
 	i = -1;
 	while (par->num_ph != ++i)
+	{
 		pthread_create(&thread[i], NULL, main_pthread, (void *) &ph[i]);
+		pthread_detach(thread[i]);
+	}
 }
 
 void	ph_init(t_params *par)
 {
 	pthread_t	waiter;
-	pthread_t	death;
 	t_ph		*ph;
 	pthread_t	*thread;
 
@@ -66,28 +68,21 @@ void	ph_init(t_params *par)
 	pthread_create(&waiter, NULL, communist, (void *) par);
 	start_time(par);
 	create_ph(par, ph, thread);
-	pthread_create(&death, NULL, stream_of_deaths, (void *) par);
+	pthread_create(&par->death, NULL, stream_of_deaths, (void *) par);
 	pthread_detach(waiter);
-	pthread_detach(death);
 }
 
 int	main(int argc, char **argv)
 {
 	t_params	par;
-	int			i;
 
 	if (argc != 6 && argc != 5)
 		return (wrong_args());
 	if (init_params(argv, &par))
 		return (wrong_args());
-	par.end_all = 0;
 	ph_init(&par);
 	pthread_mutex_unlock(par.start);
-	while (par.end == 0)
-		usleep(1);
-	i = 0;
-	while (i <= par.num_ph)
-		pthread_join(par.threads[i++], NULL);
-	par.end_all = 1;
+	pthread_join(par.death, NULL);
+	ft_usleep(10000);
 	return (0);
 }
