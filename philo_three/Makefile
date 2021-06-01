@@ -19,7 +19,8 @@ SRCS    =	main.c \
 			philosophers.c \
 			waiter.c \
 			ph_utils.c \
-			utils_itoa.c
+			utils_itoa.c \
+			create_sem.c
 
 
 

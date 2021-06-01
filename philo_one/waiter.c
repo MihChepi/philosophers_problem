@@ -9,7 +9,7 @@ void	*stream_of_deaths(void *arg)
 	i = -1;
 	pthread_mutex_lock(par->start);
 	pthread_mutex_unlock(par->start);
-	usleep(100);
+	ft_usleep(1000);
 	while (par->num_ph != ++i)
 	{
 		usleep(50);
@@ -18,11 +18,11 @@ void	*stream_of_deaths(void *arg)
 			break ;
 		if (i == par->num_ph - 1)
 			i = -1;
-		if (par->well_fed == par->num_ph)
+		if (par->well_fed >= par->num_ph)
 			break ;
 	}
 	par->end = 1;
-	if (!(par->well_fed == par->num_ph))
+	if (!(par->well_fed >= par->num_ph))
 		printf("%llu %d died\n", current_time(par), i + 1);
 	return (0);
 }

@@ -27,7 +27,7 @@ OBJS		=	$(SRCS:.c=.o)
 
 CC      	=   gcc
 
-CFLAGS  	=  -Wall -Wextra -Werror
+CFLAGS  	=  -Wall -Wextra -Werror #-fsanitize=address
 
 .PHONY:		all clean fclean re bonus
 

@@ -14,6 +14,7 @@
 
 void	create_sem_start(t_params *par)
 {
+	par->start = malloc(sizeof(sem_t));
 	sem_unlink("/start");
 	par->start = sem_open("/start", O_CREAT, 0666, 1);
 	sem_wait(par->start);
@@ -22,18 +23,18 @@ void	create_sem_start(t_params *par)
 void	create_fork(t_params *par, t_ph *ph)
 {
 	int		i;
-	char	**sem_name;
 
 	i = -1;
-	sem_name = malloc(par->num_ph);
+	par->sem_name_fork = malloc(sizeof (char *) * par->num_ph);
 	while (par->num_ph != ++i)
 	{
-		sem_name[i] = create_sem_name_fork(i);
-		sem_unlink(sem_name[i]);
-		par->fork[i] = sem_open(sem_name[i], O_CREAT, 0666, 1);
-		free(sem_name[i]);
+		par->fork[i] = malloc(sizeof(sem_t));
+		par->sem_name_fork[i] = create_sem_name_fork(i);
+		sem_unlink(par->sem_name_fork[i]);
+		par->fork[i] = sem_open(par->sem_name_fork[i], O_CREAT, 0666, 1);
+		free(par->sem_name_fork[i]);
+		par->sem_name_fork[i] = NULL;
 	}
-	free(sem_name);
 	i = -1;
 	while (par->num_ph != ++i + 1)
 	{
@@ -48,36 +49,31 @@ void	create_fork(t_params *par, t_ph *ph)
 	ph[i].params = par;
 }
 
-void	create_ph(t_params *par, t_ph *ph, pthread_t *thread)
+void	create_ph(t_params *par, t_ph *ph)
 {
 	int	i;
 
 	i = -1;
 	while (par->num_ph != ++i)
 	{
-		pthread_create(&thread[i], NULL, main_pthread, (void *) &ph[i]);
-		pthread_detach(thread[i]);
+		pthread_create(&par->threads[i], NULL, main_pthread, (void *) &ph[i]);
+		pthread_detach(par->threads[i]);
 	}
 }
 
 void	ph_init(t_params *par)
 {
 	pthread_t	waiter;
-	t_ph		*ph;
-	pthread_t	*thread;
 
-	par->end = 0;
-	ph = malloc(sizeof(t_ph) * par->num_ph);
-	thread = malloc(sizeof(pthread_t) * (par->num_ph));
-	par->threads = thread;
+	par->ph = malloc(sizeof(t_ph) * par->num_ph);
+	par->threads = malloc(sizeof(pthread_t) * (par->num_ph));
 	par->fork = malloc(sizeof(sem_t *) * par->num_ph);
+	par->death = malloc(sizeof (pthread_t));
 	par->well_fed = 0;
-	par->ph = ph;
-	create_fork(par, ph);
+	par->end = 0;
+	create_fork(par, par->ph);
 	pthread_create(&waiter, NULL, communist, (void *) par);
-	usleep(10000);
-	start_time(par);
-	create_ph(par, ph, thread);
+	create_ph(par, par->ph);
 	pthread_create(&par->death, NULL, stream_of_deaths, (void *) par);
 	pthread_detach(waiter);
 }
@@ -92,6 +88,7 @@ int	main(int argc, char **argv)
 		return (wrong_args());
 	create_sem_start(&par);
 	ph_init(&par);
+	start_time(&par);
 	sem_post(par.start);
 	pthread_join(par.death, NULL);
 	ft_usleep(10000);

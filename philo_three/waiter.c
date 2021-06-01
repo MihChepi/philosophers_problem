@@ -47,18 +47,16 @@ char	*create_sem_name(int i)
 void 	init_sem_communist(t_params *par)
 {
 	int		i;
-	char	**sem_name;
 
-	sem_name = malloc (par->num_ph);
+	par->sem_name_communist = malloc(sizeof (char *) * par->num_ph);
 	i = -1;
 	while (par->num_ph != ++i)
 	{
-		sem_name[i] = create_sem_name(i);
-		sem_unlink(sem_name[i]);
-		par->ph[i].communist = sem_open(sem_name[i], O_CREAT, 0666, 1);
-		free(sem_name[i]);
+		par->sem_name_communist[i] = create_sem_name(i);
+		sem_unlink(par->sem_name_communist[i]);
+		par->ph[i].communist = sem_open(par->sem_name_communist[i], O_CREAT, 0666, 1);
+		free(par->sem_name_communist[i]);
 	}
-	free(sem_name);
 	i = -1;
 	while (par->num_ph != ++i)
 		sem_wait(par->ph[i].communist);

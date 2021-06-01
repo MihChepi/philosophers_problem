@@ -28,6 +28,8 @@ typedef struct s_params
 	bool				flag_eats;
 	bool				end;
 	bool				end_all;
+	char				**sem_name_fork;
+	char				**sem_name_communist;
 	pthread_t			*threads;
 	struct s_ph			*ph;
 }				t_params;

@@ -6,8 +6,10 @@ void	well_fed(t_ph *ph)
 		--ph->eats;
 	if (ph->eats == 0)
 	{
+		pthread_mutex_lock(ph->params->start);
 		++ph->params->well_fed;
 		--ph->eats;
+		pthread_mutex_unlock(ph->params->start);
 	}
 }
 
@@ -46,6 +48,7 @@ void	*main_pthread(void *arg)
 	ph->start_eat = 0;
 	pthread_mutex_lock(ph->params->start);
 	pthread_mutex_unlock(ph->params->start);
+	ft_usleep(1000);
 	while (!ph->params->end)
 		ph_cycle(ph);
 	pthread_mutex_unlock(ph->fork_left);

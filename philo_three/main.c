@@ -17,15 +17,15 @@ void	create_fork(t_params *par, t_ph *ph)
 	int		i;
 
 	i = -1;
-	par->sem_name = malloc(par->num_ph);
+	par->sem_name_fork = malloc(sizeof (char *) * par->num_ph);
 	while (par->num_ph != ++i)
 	{
 		par->fork[i] = malloc(sizeof(sem_t));
-		par->sem_name[i] = create_sem_name_fork(i);
-		sem_unlink(par->sem_name[i]);
-		par->fork[i] = sem_open(par->sem_name[i], O_CREAT, 0666, 1);
-		free(par->sem_name[i]);
-		par->sem_name[i] = NULL;
+		par->sem_name_fork[i] = create_sem_name_fork(i);
+		sem_unlink(par->sem_name_fork[i]);
+		par->fork[i] = sem_open(par->sem_name_fork[i], O_CREAT, 0666, 1);
+		free(par->sem_name_fork[i]);
+		par->sem_name_fork[i] = NULL;
 	}
 	i = -1;
 	while (par->num_ph != ++i + 1)

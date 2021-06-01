@@ -9,7 +9,7 @@ void	*stream_of_deaths(void *arg)
 	i = -1;
 	sem_wait(par->start);
 	sem_post(par->start);
-	usleep(100);
+	ft_usleep(1000);
 	while (par->num_ph != ++i)
 	{
 		usleep(50);
@@ -18,7 +18,7 @@ void	*stream_of_deaths(void *arg)
 			break ;
 		if (i == par->num_ph - 1)
 			i = -1;
-		if (par->well_fed == par->num_ph)
+		if (par->well_fed >= par->num_ph)
 			break ;
 	}
 	if (!(par->well_fed == par->num_ph))
@@ -45,18 +45,16 @@ char	*create_sem_name(int i)
 void 	init_mutex_communist(t_params *par)
 {
 	int		i;
-	char	**sem_name;
 
-	sem_name = malloc (par->num_ph);
+	par->sem_name_communist = malloc(sizeof (char *) * par->num_ph);
 	i = -1;
 	while (par->num_ph != ++i)
 	{
-		sem_name[i] = create_sem_name(i);
-		sem_unlink(sem_name[i]);
-		par->ph[i].communist = sem_open(sem_name[i], O_CREAT, 0666, 1);
-		free(sem_name[i]);
+		par->sem_name_communist[i] = create_sem_name(i);
+		sem_unlink(par->sem_name_communist[i]);
+		par->ph[i].communist = sem_open(par->sem_name_communist[i], O_CREAT, 0666, 1);
+		free(par->sem_name_communist[i]);
 	}
-	free(sem_name);
 	i = -1;
 	while (par->num_ph != ++i)
 		sem_wait(par->ph[i].communist);
@@ -73,8 +71,8 @@ void 	communism(t_params *par)
 	if (par->num_ph > 1)
 		max_eat = par->num_ph / 2;
 	i = 0;
-	sem_wait(par->start);
-	sem_post(par->start);
+//	sem_wait(par->start);
+//	sem_post(par->start);
 	while (!par->end_all)
 	{
 		can_eat = i;

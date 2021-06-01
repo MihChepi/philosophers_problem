@@ -37,11 +37,13 @@ int	init_params(char **argv, t_params *p)
 	if (p->num_ph < 1 || p->time_to_die < 1 || p->time_to_eat < 1
 		|| p->time_to_sleep < 1)
 		return (1);
+	if (argv[5] != NULL && p->eats <= 0)
+		return (1);
 	return (0);
 }
 
 int	wrong_args(void)
 {
-	printf("Wrong number of args\n");
+	printf("Wrong args\n");
 	return (1);
 }

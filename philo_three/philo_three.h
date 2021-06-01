@@ -33,7 +33,8 @@ typedef struct s_params
 	pid_t				waiter;
 	pthread_t			*death;
 	pthread_t			*main;
-	char				**sem_name;
+	char				**sem_name_fork;
+	char				**sem_name_communist;
 	struct s_ph			*ph;
 }				t_params;
 
