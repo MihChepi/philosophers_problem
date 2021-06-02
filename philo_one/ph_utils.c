@@ -40,3 +40,9 @@ void 	ft_usleep(unsigned long long t)
 		now = current_get_time_from_start();
 	}
 }
+
+int	fail_func(void)
+{
+	printf("fail memory allocation\n");
+	return (1);
+}

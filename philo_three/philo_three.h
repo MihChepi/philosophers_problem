@@ -64,5 +64,6 @@ char				*create_sem_name_fork(int i);
 char				*my_itoa(int i);
 void				create_sem_stop(t_params *par);
 void				create_sem_start(t_params *par);
+size_t				ft_strlcat(char *dest, const char *src, size_t size);
 
 #endif

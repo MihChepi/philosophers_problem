@@ -52,5 +52,6 @@ void				start_time(t_params *par);
 void				*main_pthread(void *arg);
 void				*communist(void *arg);
 void				*stream_of_deaths(void *arg);
+int					fail_func(void);
 
 #endif

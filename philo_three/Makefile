@@ -20,6 +20,7 @@ SRCS    =	main.c \
 			waiter.c \
 			ph_utils.c \
 			utils_itoa.c \
+			ft_strlcat.c \
 			create_sem.c
 
 

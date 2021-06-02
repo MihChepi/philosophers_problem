@@ -49,19 +49,22 @@ void	create_fork(t_params *par, t_ph *ph)
 	ph[i].params = par;
 }
 
-void	create_ph(t_params *par, t_ph *ph)
+int	create_ph(t_params *par, t_ph *ph)
 {
 	int	i;
 
 	i = -1;
 	while (par->num_ph != ++i)
 	{
-		pthread_create(&par->threads[i], NULL, main_pthread, (void *) &ph[i]);
+		if (pthread_create(&par->threads[i],
+				NULL, main_pthread, (void *) &ph[i]))
+			return (1);
 		pthread_detach(par->threads[i]);
 	}
+	return (0);
 }
 
-void	ph_init(t_params *par)
+int	ph_init(t_params *par)
 {
 	pthread_t	waiter;
 
@@ -72,10 +75,12 @@ void	ph_init(t_params *par)
 	par->well_fed = 0;
 	par->end = 0;
 	create_fork(par, par->ph);
-	pthread_create(&waiter, NULL, communist, (void *) par);
+	if (pthread_create(&waiter, NULL, communist, (void *) par))
+		return (1);
 	create_ph(par, par->ph);
 	pthread_create(&par->death, NULL, stream_of_deaths, (void *) par);
 	pthread_detach(waiter);
+	return (0);
 }
 
 int	main(int argc, char **argv)
@@ -87,10 +92,11 @@ int	main(int argc, char **argv)
 	if (init_params(argv, &par))
 		return (wrong_args());
 	create_sem_start(&par);
-	ph_init(&par);
+	if (ph_init(&par))
+		return (1);
 	start_time(&par);
 	sem_post(par.start);
 	pthread_join(par.death, NULL);
-	ft_usleep(10000);
+	ft_usleep(100000);
 	return (0);
 }

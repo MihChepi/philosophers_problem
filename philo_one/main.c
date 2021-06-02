@@ -39,37 +39,42 @@ void	create_fork(t_params *par, t_ph *ph)
 	ph[i].params = par;
 }
 
-void	create_ph(t_params *par, t_ph *ph, pthread_t *thread)
+int	create_ph(t_params *par)
 {
 	int	i;
 
 	i = -1;
 	while (par->num_ph != ++i)
 	{
-		pthread_create(&thread[i], NULL, main_pthread, (void *) &ph[i]);
-		pthread_detach(thread[i]);
+		if (pthread_create(&par->threads[i],
+				NULL, main_pthread, (void *) &par->ph[i]))
+			return (1);
 	}
+	i = -1;
+	while (par->num_ph != ++i)
+		pthread_detach(par->threads[i]);
+	return (0);
 }
 
-void	ph_init(t_params *par)
+int	ph_init(t_params *par)
 {
 	pthread_t	waiter;
-	t_ph		*ph;
-	pthread_t	*thread;
 
-	par->end = 0;
-	ph = malloc(sizeof(t_ph) * par->num_ph);
-	thread = malloc(sizeof(pthread_t) * (par->num_ph));
-	par->threads = thread;
+	par->ph = malloc(sizeof(t_ph) * par->num_ph);
+	par->threads = malloc(sizeof(pthread_t) * (par->num_ph));
 	par->fork = malloc(sizeof(pthread_mutex_t) * par->num_ph);
 	par->well_fed = 0;
-	par->ph = ph;
-	create_fork(par, ph);
+	par->end = 0;
+	if (!par->ph || !par->threads || !par->fork)
+		return (1);
+	create_fork(par, par->ph);
 	pthread_create(&waiter, NULL, communist, (void *) par);
 	start_time(par);
-	create_ph(par, ph, thread);
+	if (create_ph(par))
+		return (1);
 	pthread_create(&par->death, NULL, stream_of_deaths, (void *) par);
 	pthread_detach(waiter);
+	return (0);
 }
 
 int	main(int argc, char **argv)
@@ -80,7 +85,8 @@ int	main(int argc, char **argv)
 		return (wrong_args());
 	if (init_params(argv, &par))
 		return (wrong_args());
-	ph_init(&par);
+	if (ph_init(&par))
+		return (fail_func());
 	pthread_mutex_unlock(par.start);
 	pthread_join(par.death, NULL);
 	ft_usleep(10000);

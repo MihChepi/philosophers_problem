@@ -57,5 +57,6 @@ void				*communist(void *arg);
 void				*stream_of_deaths(void *arg);
 char				*create_sem_name_fork(int i);
 char				*my_itoa(int i);
+size_t				ft_strlcat(char *dest, const char *src, size_t size);
 
 #endif

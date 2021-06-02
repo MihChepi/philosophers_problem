@@ -37,7 +37,7 @@ char	*create_sem_name(int i)
 	str[1] = 'c';
 	str[2] = 'm';
 	num = my_itoa(i);
-	strlcat(str, num, 100);
+	ft_strlcat(str, num, 100);
 	free(num);
 	return (str);
 }
@@ -52,7 +52,8 @@ void 	init_mutex_communist(t_params *par)
 	{
 		par->sem_name_communist[i] = create_sem_name(i);
 		sem_unlink(par->sem_name_communist[i]);
-		par->ph[i].communist = sem_open(par->sem_name_communist[i], O_CREAT, 0666, 1);
+		par->ph[i].communist = sem_open(par->sem_name_communist[i],
+				O_CREAT, 0666, 1);
 		free(par->sem_name_communist[i]);
 	}
 	i = -1;
@@ -71,8 +72,8 @@ void 	communism(t_params *par)
 	if (par->num_ph > 1)
 		max_eat = par->num_ph / 2;
 	i = 0;
-//	sem_wait(par->start);
-//	sem_post(par->start);
+	sem_wait(par->start);
+	sem_post(par->start);
 	while (!par->end_all)
 	{
 		can_eat = i;

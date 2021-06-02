@@ -19,6 +19,7 @@ SRCS    =	main.c \
 			philosophers.c \
 			waiter.c \
 			ph_utils.c \
+			ft_strlcat.c \
 			utils_itoa.c
 
 
@@ -27,7 +28,7 @@ OBJS		=	$(SRCS:.c=.o)
 
 CC      	=   gcc
 
-CFLAGS  	=  -Wall -Wextra -Werror #-fsanitize=address
+CFLAGS  	=  -Wall -Wextra -Werror
 
 .PHONY:		all clean fclean re bonus
 

@@ -39,7 +39,7 @@ char	*create_sem_name(int i)
 	str[1] = 'c';
 	str[2] = 'm';
 	num = my_itoa(i);
-	strlcat(str, num, 100);
+	ft_strlcat(str, num, 100);
 	free(num);
 	return (str);
 }
@@ -54,7 +54,8 @@ void 	init_sem_communist(t_params *par)
 	{
 		par->sem_name_communist[i] = create_sem_name(i);
 		sem_unlink(par->sem_name_communist[i]);
-		par->ph[i].communist = sem_open(par->sem_name_communist[i], O_CREAT, 0666, 1);
+		par->ph[i].communist = sem_open(par->sem_name_communist[i],
+				O_CREAT, 0666, 1);
 		free(par->sem_name_communist[i]);
 	}
 	i = -1;
