@@ -6,7 +6,7 @@
 /*   By: khermann <khermann@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/27 13:30:13 by khermann          #+#    #+#             */
-/*   Updated: 2021/05/28 12:18:14 by khermann         ###   ########.fr       */
+/*   Updated: 2021/06/02 16:36:05 by khermann         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,8 +90,6 @@ void	ph_init(t_params *par)
 	par->well_fed = 0;
 	par->ph = malloc(sizeof(t_ph) * par->num_ph);
 	par->fork = malloc(sizeof(sem_t *) * par->num_ph);
-	par->start = malloc(sizeof (sem_t));
-	par->stop = malloc(sizeof (sem_t));
 	par->pid = malloc((sizeof (pid_t)) * par->num_ph);
 	create_fork(par, par->ph);
 	create_sem_start(par);

@@ -37,7 +37,7 @@ char	*create_sem_name(int i)
 	str[1] = 'c';
 	str[2] = 'm';
 	num = my_itoa(i);
-	ft_strlcat(str, num, 100);
+	strlcat(str, num, 100);
 	free(num);
 	return (str);
 }

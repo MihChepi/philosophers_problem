@@ -6,7 +6,7 @@
 /*   By: khermann <khermann@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/27 13:30:13 by khermann          #+#    #+#             */
-/*   Updated: 2021/04/27 19:19:12 by khermann         ###   ########.fr       */
+/*   Updated: 2021/06/02 16:34:55 by khermann         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 void	create_sem_start(t_params *par)
 {
-	par->start = malloc(sizeof(sem_t));
 	sem_unlink("/start");
 	par->start = sem_open("/start", O_CREAT, 0666, 1);
 	sem_wait(par->start);
@@ -28,7 +27,6 @@ void	create_fork(t_params *par, t_ph *ph)
 	par->sem_name_fork = malloc(sizeof (char *) * par->num_ph);
 	while (par->num_ph != ++i)
 	{
-		par->fork[i] = malloc(sizeof(sem_t));
 		par->sem_name_fork[i] = create_sem_name_fork(i);
 		sem_unlink(par->sem_name_fork[i]);
 		par->fork[i] = sem_open(par->sem_name_fork[i], O_CREAT, 0666, 1);
@@ -71,7 +69,6 @@ int	ph_init(t_params *par)
 	par->ph = malloc(sizeof(t_ph) * par->num_ph);
 	par->threads = malloc(sizeof(pthread_t) * (par->num_ph));
 	par->fork = malloc(sizeof(sem_t *) * par->num_ph);
-	par->death = malloc(sizeof (pthread_t));
 	par->well_fed = 0;
 	par->end = 0;
 	create_fork(par, par->ph);
